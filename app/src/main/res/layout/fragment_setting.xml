@@ -1,0 +1,99 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="com.tonychen.tonyrecorder.ui.SettingFragment">
+
+    <android.support.v7.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:divider="@drawable/div_line">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="录音机参数"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                app:title="AudioSource"
+                app:value="MediaRecorder.AudioSource.MIC"/>
+
+            <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                app:title="SampleRateInHz"
+                app:value="16000"/>
+
+            <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                app:title="channelConfig"
+                app:value="AudioFormat.CHANNEL_IN_MONO"/>           <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                app:title="audioFormat"
+                app:value="AudioFormat.CHANNEL_IN_MONO"/>        <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="4dp"
+                app:title="bufferSizeInBytes"
+                app:value="AudioFormat.CHANNEL_IN_MONO"/>
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="6dp"
+            android:paddingRight="6dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="录音参数"
+                android:textSize="16sp"
+                android:textStyle="bold"/>
+
+            <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="采样率"
+                app:value="16000"/>
+
+            <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="采样率"
+                app:value="16000"/>
+
+            <com.tonychen.tonyrecorder.widget.KeyValueView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:title="采样率"
+                app:value="16000"/>
+
+
+        </LinearLayout>
+
+    </android.support.v7.widget.LinearLayoutCompat>
+
+</ScrollView>

@@ -13,9 +13,16 @@ import android.util.Log;
 public class RecorderApplication extends Application {
     public static final String TAG = RecorderApplication.class.getSimpleName();
 
+    public static RecorderApplication getmInstance() {
+        return mInstance;
+    }
+
+    private static RecorderApplication mInstance;
+
     @Override
     public void onCreate() {
         super.onCreate();
+        mInstance = this;
     }
 
     @Override

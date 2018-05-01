@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PixelFormat;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -17,6 +18,7 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.PagerTabStrip;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.tonychen.tonyrecorder.R;
@@ -51,7 +53,9 @@ public class MainActivity extends FragmentActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        permissioncheck();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            permissioncheck();
+        }
     }
 
     /**
@@ -75,6 +79,10 @@ public class MainActivity extends FragmentActivity {
             shouldRequestPermissionList.toArray(shourldRequestPermissionArr);
             // 请求权限
             ActivityCompat.requestPermissions(this, shourldRequestPermissionArr, REQUESTCODE);
+        } else { // 已获得所有的权限
+            Log.d(TAG, "已获得所有的权限");
+//            Intent itStartRecorderService = new Intent(this, RecorderService.class);
+//            startService(itStartRecorderService);
         }
     }
 
@@ -151,6 +159,9 @@ public class MainActivity extends FragmentActivity {
 
         mAdapter = new PagerAdapter(getSupportFragmentManager());
         mViewPager.setAdapter(mAdapter);
+
+        mViewPager.setCurrentItem(0);
+        mViewPager.setFocusable(false);
 
     }
 

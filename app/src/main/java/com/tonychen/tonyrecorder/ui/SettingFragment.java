@@ -20,4 +20,9 @@ public class SettingFragment extends Fragment {
                              Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_setting, container, false);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
 }

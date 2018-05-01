@@ -3,4 +3,11 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="hello_record_fragment">record</string>
     <string name="hello_play_fragment">play</string>
+
+    <string-array name="audiosourcearr">
+        <item>MediaRecorder.AudioSource.MIC</item>
+        <item>MediaRecorder.AudioSource.MIC1</item>
+        <item>MediaRecorder.AudioSource.MIC2</item>
+        <item>MediaRecorder.AudioSource.MIC3</item>
+    </string-array>
 </resources>

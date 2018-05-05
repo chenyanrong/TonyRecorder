@@ -105,7 +105,7 @@ public class TonyRecorder implements ITonyRecorder {
     private Runnable mReadBufTask = new Runnable() {
         @Override
         public void run() {
-            Log.d(TAG, "mReadBufTask===============");
+            Log.d(TAG, "mReadBufTask----------------");
             int readLength = mAudioRecord.read(readBuff, 0, readBuff.length);
             Log.d(TAG, " mAudioRecord.read readLength=" + readLength + " isStopRecord=" + isStopRecord);
             if (readLength > 0 && !isStopRecord) {
@@ -120,8 +120,9 @@ public class TonyRecorder implements ITonyRecorder {
                 }
             }
             if (!isStopRecord) {
-                mReadHanlder.postDelayed(mReadBufTask, mSamplingIntervalTime);
+                mReadHanlder.post(mReadBufTask);
             }
+//            Log.d(TAG, "mReadBufTask=============== mSamplingIntervalTime="+mSamplingIntervalTime+"\n");
         }
     };
 
@@ -253,12 +254,11 @@ public class TonyRecorder implements ITonyRecorder {
         if (readBuffSize == -1 || readBuffSize <= 0) { // 没有赋值,默认与系统的缓冲区一样大小
             readBuff = new byte[bufferSizeInBytes];
         } else {
-//            if (readBuffSize > minBufferSize) {
-//                readBuff = new byte[minBufferSize];
-//            } else {
-//                readBuff = new byte[readBuffSize];
-//            }
-            readBuff = new byte[readBuffSize];
+            if (readBuffSize > minBufferSize) {
+                readBuff = new byte[minBufferSize];
+            } else {
+                readBuff = new byte[readBuffSize];
+            }
         }
         Log.d(TAG, "系统填充录音机buff bufferSizeInBytes=" + bufferSizeInBytes + "\n我们每次读取的buff的readBuff.length=" + readBuff.length);
         Log.d(TAG, "新录音机的mSamplingIntervalTime=" + mSamplingIntervalTime);

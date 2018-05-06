@@ -46,15 +46,6 @@ public class TonyRecorder implements ITonyRecorder {
     private SaveRecordBufTask mSaveRecordBufTask;
 
     /**
-     * 读取缓冲区数据的时间间隔
-     */
-    private int mSamplingIntervalTime;
-
-    public void setSamplingIntervalTime(int samplingIntervalTime) {
-        mSamplingIntervalTime = samplingIntervalTime;
-    }
-
-    /**
      * 录音来源
      */
     private int mAudioSource;
@@ -197,7 +188,7 @@ public class TonyRecorder implements ITonyRecorder {
      */
     public AudioRecord createRecorder(int audioSource, int sampleRateInHz,
                                       int channelConfig, int audioFormat,
-                                      int bufferSizeInBytes, int samplingIntervalTime,
+                                      int bufferSizeInBytes,
                                       int readBuffSize, boolean isSaveAllRecorderBuff) {
         Log.d(TAG, "createRecorder confing===>>> \n " +
                 "audioSource=" + audioSource + "\n" +
@@ -205,7 +196,6 @@ public class TonyRecorder implements ITonyRecorder {
                 "channelConfig=" + channelConfig + "\n" +
                 "audioFormat=" + audioFormat + "\n" +
                 "bufferSizeInBytes=" + bufferSizeInBytes + "\n" +
-                "samplingIntervalTime=" + samplingIntervalTime + "\n" +
                 "readBuffSize=" + readBuffSize + "\n" +
                 "isSaveAllRecorderBuff=" + isSaveAllRecorderBuff
         );
@@ -246,22 +236,16 @@ public class TonyRecorder implements ITonyRecorder {
         if (minBufferSize > bufferSizeInBytes) {
             bufferSizeInBytes = minBufferSize;
         }
-        if (samplingIntervalTime < 0) {
-            mSamplingIntervalTime = 0;
-        } else {
-            mSamplingIntervalTime = samplingIntervalTime;
-        }
         if (readBuffSize == -1 || readBuffSize <= 0) { // 没有赋值,默认与系统的缓冲区一样大小
             readBuff = new byte[bufferSizeInBytes];
         } else {
             if (readBuffSize > minBufferSize) {
-                readBuff = new byte[minBufferSize];
-            } else {
                 readBuff = new byte[readBuffSize];
+            } else {
+                readBuff = new byte[minBufferSize];
             }
         }
         Log.d(TAG, "系统填充录音机buff bufferSizeInBytes=" + bufferSizeInBytes + "\n我们每次读取的buff的readBuff.length=" + readBuff.length);
-        Log.d(TAG, "新录音机的mSamplingIntervalTime=" + mSamplingIntervalTime);
         mAudioRecord = new AudioRecord(audioSource,
                 mFrequency,
                 mChannelCongifiGuration,
@@ -277,7 +261,7 @@ public class TonyRecorder implements ITonyRecorder {
     public AudioRecord createRecorder(int audioSource, int sampleRateInHz, int channelConfig, int audioFormat, boolean isSaveAllRecorderBuff) {
         return createRecorder(MediaRecorder.AudioSource.MIC, 16000,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
-                AudioRecord.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT), -1, -1,
+                AudioRecord.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT), -1,
                 isSaveAllRecorderBuff
         );
     }
@@ -286,7 +270,7 @@ public class TonyRecorder implements ITonyRecorder {
         return createRecorder(MediaRecorder.AudioSource.MIC, 16000,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 AudioRecord.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT),
-                -1, -1, isSaveAllRecorderBuff
+                -1, isSaveAllRecorderBuff
         );
     }
 
@@ -294,7 +278,7 @@ public class TonyRecorder implements ITonyRecorder {
         return createRecorder(MediaRecorder.AudioSource.MIC, 16000,
                 AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT,
                 AudioRecord.getMinBufferSize(16000, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT),
-                -1, -1, true
+                 -1, true
         );
     }
 
@@ -305,7 +289,6 @@ public class TonyRecorder implements ITonyRecorder {
                 + "channelConfig=" + mChannelCongifiGuration + "\n"
                 + "audioFormat=" + mAudioFormat + "\n"
                 + "bufferSizeInBytes=" + mBufferSizeInBytes + "\n"
-                + "samplingIntervalTime=" + mSamplingIntervalTime + "\n"
                 + "readBuffSize=" + readBuff.length;
 
     }
@@ -404,7 +387,7 @@ public class TonyRecorder implements ITonyRecorder {
                 mSaveRecordBufTask = new SaveRecordBufTask(mBops);
             }
             isStopRecord = false;
-            mReadHanlder.postDelayed(mReadBufTask,mSamplingIntervalTime);
+            mReadHanlder.post(mReadBufTask);
             Log.d(TAG, "startRecord");
         } else {
             throw new NullPointerException("当前audioRecord对象为空");

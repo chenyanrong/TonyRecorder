@@ -58,8 +58,8 @@ public class RecorderService extends Service {
                     if (bufferSizeInbytes == -1) {
                         bufferSizeInbytes = AudioRecord.getMinBufferSize(sampleRateinhz, channelConfig, audioFormat);
                     }
-                    if (samplingIntervalTime <= 0) {
-                        samplingIntervalTime = -1;
+                    if (samplingIntervalTime < 0) {
+                        throw new IllegalArgumentException("时间间隔必须为正值");
                     } else {
                         if (audioFormat == ENCODING_PCM_16BIT) {
                             readBuffSize = channelConfig * sampleRateinhz * 2 * samplingIntervalTime / 1000 / 8;
@@ -67,13 +67,11 @@ public class RecorderService extends Service {
                         } else if (audioFormat == ENCODING_PCM_8BIT) {
                             readBuffSize = channelConfig * sampleRateinhz * samplingIntervalTime / 1000 / 8;
                             bufferSizeInbytes = readBuffSize;
-                        } else {
-                            readBuffSize = -1;
                         }
                     }
                     mAudioRecord = TonyRecorder.getInstance().createRecorder(audioSource,
                             sampleRateinhz, channelConfig, audioFormat,
-                            bufferSizeInbytes, samplingIntervalTime, readBuffSize, saveAllBuff);
+                            bufferSizeInbytes, readBuffSize, saveAllBuff);
                 }
 //                Log.d(TAG, "录音机的参数如下:\n" + TonyRecorder.getInstance().toString());
             } else {

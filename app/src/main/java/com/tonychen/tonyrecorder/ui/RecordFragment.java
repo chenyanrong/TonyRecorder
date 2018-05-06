@@ -94,10 +94,10 @@ public class RecordFragment extends Fragment {
         Intent it = new Intent(getContext(), RecorderService.class);
         it.setAction(RecorderService.ACTION_STARTBYARGUMENT);
         it.putExtra(AUDIOSOURC, MediaRecorder.AudioSource.MIC);
-        it.putExtra(SAMPLERATEINHZ, 44100);
+        it.putExtra(SAMPLERATEINHZ, 16000);
         it.putExtra(CHANNELCONFIG, AudioFormat.CHANNEL_IN_MONO);
         it.putExtra(AUDIOFORMAT, AudioFormat.ENCODING_PCM_16BIT);
-        it.putExtra(SAMPLINGINTERVALTIME, 100);
+        it.putExtra(SAMPLINGINTERVALTIME, 50);
         it.putExtra(SAVEALLRECORDERBUFF, true);
         getContext().startService(it);
 //        ServiceConnection mRecorderConnection = new ServiceConnection() {

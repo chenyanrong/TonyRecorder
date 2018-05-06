@@ -26,15 +26,27 @@ public class UIUtil {
         float density = metrics.density;
         return (int) (dip * density + 0.5f);
     }
-    public static int px2dip(Context context,int px) {
+
+    public static float dip2px(Context context, float dip) {
+        //
+        // 公式： dp = px / (dpi / 160) px = dp * (dpi / 160)
+        // dp = px / denisity
+        // px = dp * denisity;
+        DisplayMetrics metrics = context.getResources().getDisplayMetrics();
+        float density = metrics.density;
+        return dip * density + 0.5f;
+    }
+
+    public static int px2dip(Context context, int px) {
         // dp = px / denisity
         DisplayMetrics metrics = context.getResources().getDisplayMetrics();
         float density = metrics.density;
         return (int) (px / density + 0.5f);
     }
+
     /**
      * convert px to its equivalent sp
-     *
+     * <p>
      * 将px转换为sp
      */
     public static int px2sp(Context context, float pxValue) {
@@ -45,7 +57,7 @@ public class UIUtil {
 
     /**
      * convert sp to its equivalent px
-     *
+     * <p>
      * 将sp转换为px
      */
     public static int sp2px(Context context, float spValue) {

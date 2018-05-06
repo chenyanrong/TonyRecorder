@@ -9,12 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tonychen.tonyrecorder.R;
 import com.tonychen.tonyrecorder.recorder.TonyRecorder;
 import com.tonychen.tonyrecorder.service.RecorderService;
 import com.tonychen.tonyrecorder.util.VolumeUtil;
+import com.tonychen.tonyrecorder.widget.VolumeWaveView;
 
 import static com.tonychen.tonyrecorder.service.RecorderService.AUDIOFORMAT;
 import static com.tonychen.tonyrecorder.service.RecorderService.AUDIOSOURC;
@@ -25,6 +27,9 @@ import static com.tonychen.tonyrecorder.service.RecorderService.SAVEALLRECORDERB
 
 
 public class RecordFragment extends Fragment {
+
+    private TextView mDB;
+    private VolumeWaveView mVolumeWaveView;
 
     public RecordFragment() {
     }
@@ -50,6 +55,9 @@ public class RecordFragment extends Fragment {
         Button btnStop = mContentView.findViewById(R.id.btn_stop);
         Button btnClear = mContentView.findViewById(R.id.btn_clear);
 
+        mDB = (TextView) mContentView.findViewById(R.id.tv_db);
+        mVolumeWaveView = (VolumeWaveView) mContentView.findViewById(R.id.vwv);
+
         btnCreate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -61,10 +69,19 @@ public class RecordFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     TonyRecorder.getInstance().startRecord();
+                    mDB.setVisibility(View.VISIBLE);
                     TonyRecorder.getInstance().setRecorderReadBuffListener(new TonyRecorder.IRecorderReadBuff() {
                         @Override
                         public void onRead(byte[] buf, int length) {
-                            VolumeUtil.getVolume(buf, length);
+                            double volume = VolumeUtil.getVolume(buf, length);
+                            final int db = (int) Math.round((volume - 34) * 25);
+                            mVolumeWaveView.addData(db);
+                            mDB.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mDB.setText("相对音量:" + db);
+                                }
+                            });
                         }
                     });
                 } catch (Exception e) {
@@ -77,6 +94,7 @@ public class RecordFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 try {
+                    mDB.setVisibility(View.GONE);
                     TonyRecorder.getInstance().stopRecord();
                 } catch (Exception e) {
                     e.printStackTrace();

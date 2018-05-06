@@ -11,7 +11,7 @@ import android.util.Log;
 
 public class VolumeUtil {
     public static final String TAG = VolumeUtil.class.getSimpleName();
-    private static final int BASE = 1;
+    private static  int BASE = 1; // 噪声振幅平方数
 
     public static final double getVolume(byte[] buf, int length) {
         double db = 0;
@@ -26,4 +26,30 @@ public class VolumeUtil {
         Log.d(TAG, "音量:" + db);
         return db;
     }
+
+//    public static int getVolume(byte[] buffer,int lenght){
+//        int volume = 0;
+//        long v = 0;
+//        int readLen =lenght;
+//        short[] buffer2 = new short[readLen];
+//
+//        for (int i = 0; i < readLen; i+=2) {
+//            buffer2[i/2] = (short) (((buffer[i + 1] << 8) | buffer[i + 0] & 0xff));
+//        }
+//
+//        Arrays.sort(buffer2);
+//        Log.v(TAG, "buffer中的最小值--->"+buffer2[0]);
+//
+//        short min = buffer2[0];
+//        Log.v(TAG,"buffer中的数据最小的大小--->"+buffer2[0]);
+//
+//        double v1= min*min;
+//        double r1 = 32768 * 32768;
+//
+//        //结果应该是-90~0db
+//        int db = (int) Math.round((10 * Math.log10(v1 / r1)+80)*120/(double)90);// 单位是dB
+//        Log.d(TAG, "分贝数--->"+db);
+//
+//        return db;
+//    }
 }

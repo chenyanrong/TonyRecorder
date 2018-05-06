@@ -19,6 +19,14 @@
         android:text="开始"
         />
 
+    <TextView
+        android:id="@+id/tv_db"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+
+        />
+
     <Button
         android:id="@+id/btn_stop"
         android:layout_width="wrap_content"
@@ -34,6 +42,13 @@
         android:layout_below="@id/btn_stop"
         android:text="清理录音文件"
         />
+
+    <com.tonychen.tonyrecorder.widget.VolumeWaveView
+        android:layout_width="match_parent"
+        android:id="@+id/vwv"
+        android:layout_height="110dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="30dp"/>
 
 
 </RelativeLayout>

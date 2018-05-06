@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.tonychen.tonyrecorder.R;
 import com.tonychen.tonyrecorder.recorder.TonyRecorder;
 import com.tonychen.tonyrecorder.service.RecorderService;
+import com.tonychen.tonyrecorder.util.VolumeUtil;
 
 import static com.tonychen.tonyrecorder.service.RecorderService.AUDIOFORMAT;
 import static com.tonychen.tonyrecorder.service.RecorderService.AUDIOSOURC;
@@ -60,6 +61,12 @@ public class RecordFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     TonyRecorder.getInstance().startRecord();
+                    TonyRecorder.getInstance().setRecorderReadBuffListener(new TonyRecorder.IRecorderReadBuff() {
+                        @Override
+                        public void onRead(byte[] buf, int length) {
+                            VolumeUtil.getVolume(buf, length);
+                        }
+                    });
                 } catch (Exception e) {
                     e.printStackTrace();
                     Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();

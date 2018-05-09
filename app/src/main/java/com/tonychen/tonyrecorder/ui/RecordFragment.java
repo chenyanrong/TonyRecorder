@@ -70,6 +70,7 @@ public class RecordFragment extends Fragment {
                 try {
                     TonyRecorder.getInstance().startRecord();
                     mDB.setVisibility(View.VISIBLE);
+                    mVolumeWaveView.setStopDrawing(false);
                     TonyRecorder.getInstance().setRecorderReadBuffListener(new TonyRecorder.IRecorderReadBuff() {
                         @Override
                         public void onRead(byte[] buf, int length) {
@@ -95,6 +96,7 @@ public class RecordFragment extends Fragment {
             public void onClick(View v) {
                 try {
                     mDB.setVisibility(View.GONE);
+                    mVolumeWaveView.setStopDrawing(true);
                     TonyRecorder.getInstance().stopRecord();
                 } catch (Exception e) {
                     e.printStackTrace();

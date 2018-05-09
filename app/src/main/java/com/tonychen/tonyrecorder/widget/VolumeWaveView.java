@@ -3,7 +3,9 @@ package com.tonychen.tonyrecorder.widget;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Handler;
@@ -14,7 +16,13 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.tonychen.tonyrecorder.bean.LimitQueue;
 import com.tonychen.tonyrecorder.util.UIUtil;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created by TonyChen on 2018/05/06;
@@ -33,13 +41,23 @@ public class VolumeWaveView extends SurfaceView implements SurfaceHolder.Callbac
     private int mDataDrawWidth;
 
     private int mDataSize;
-    private int[] mDataArr;
-    private int mCurrentIndex;
+    private LimitQueue<Integer> mQueue;
 
     private Paint mPaintLine;
+    private Paint mPaintSubLine;
     private Paint mCenterLine;
     private Paint mDataPaint;
     private Paint mCirclePaint;
+
+    public boolean isStopDrawing() {
+        return isStopDrawing;
+    }
+
+    public void setStopDrawing(boolean stopDrawing) {
+        isStopDrawing = stopDrawing;
+    }
+
+    private boolean isStopDrawing;
 
     private int fps = 10;
 
@@ -47,7 +65,9 @@ public class VolumeWaveView extends SurfaceView implements SurfaceHolder.Callbac
         @Override
         public void run() {
             draw();
-            mDrawHandler.postDelayed(mDrawTask, 1000 / fps);
+            if(!isStopDrawing) {
+                mDrawHandler.postDelayed(mDrawTask, 1000 / fps);
+            }
         }
     };
 
@@ -75,6 +95,7 @@ public class VolumeWaveView extends SurfaceView implements SurfaceHolder.Callbac
         mDataDrawWidth = UIUtil.dip2px(getContext(), 1); // 数据线宽度
 
         mPaintLine = new Paint();
+        mPaintSubLine = new Paint();
         mCenterLine = new Paint();
         mDataPaint = new Paint();
         mCirclePaint = new Paint();
@@ -82,6 +103,9 @@ public class VolumeWaveView extends SurfaceView implements SurfaceHolder.Callbac
 
         mCirclePaint.setColor(Color.rgb(246, 131, 126));
         mPaintLine.setColor(Color.rgb(169, 169, 169));
+        mPaintSubLine.setColor(Color.argb(220,188, 188, 188));
+        mPaintSubLine.setStyle(Paint.Style.STROKE);
+        mPaintSubLine.setPathEffect ( new DashPathEffect( new float [ ] { UIUtil.dip2px(getContext(),8), UIUtil.dip2px(getContext(),4) }, 0 ) ) ;
         mCenterLine.setColor(Color.rgb(39, 199, 175));
         mDataPaint.setColor(Color.rgb(39, 199, 175));
         mDataPaint.setStrokeWidth(mDataDrawWidth);
@@ -101,16 +125,16 @@ public class VolumeWaveView extends SurfaceView implements SurfaceHolder.Callbac
     public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
         Log.v(TAG, "surfaceChanged width=" + width + " height=" + height);
         mDataSize = getWidth() / mDataDrawWidth;
-        mDataArr = new int[mDataSize];
+        mQueue = new LimitQueue<>(mDataSize);
         Log.d(TAG, "数据队列理论长度=" + getWidth() / mDataDrawWidth);
         mDrawHandler.removeCallbacks(mDrawTask);
         mDrawHandler.post(mDrawTask);
     }
 
     public synchronized void addData(int data) {
-        if (mCurrentIndex >= mDataSize) {
-            return;
-        }
+//        if (mCurrentIndex >= mDataSize) {
+//            return;
+//        }
         if (data < 0) {
             data = 0;
         }
@@ -122,15 +146,19 @@ public class VolumeWaveView extends SurfaceView implements SurfaceHolder.Callbac
 //            mDataArr[mDataSize - 1] = data;
 //            mCurrentIndex = mDataSize - 1;
 //        } else {
-        mDataArr[mCurrentIndex] = data;
+//        mDataArr[mCurrentIndex] = data;
 //        }
-        mCurrentIndex++;
+
+        mQueue.offer(data);
+
+//        mCurrentIndex++;
     }
 
     @Override
     public void surfaceDestroyed(SurfaceHolder holder) {
         Log.v(TAG, "surfaceDestroyed");
     }
+
 
     private void draw() {
         Canvas canvas = mHolder.lockCanvas(
@@ -140,21 +168,35 @@ public class VolumeWaveView extends SurfaceView implements SurfaceHolder.Callbac
         }
         canvas.drawARGB(255, 239, 239, 239); // 解决残影问题
 
-        canvas.drawCircle(0, circleRadio, circleRadio, mCirclePaint);// 上面小圆
-        canvas.drawCircle(0, getHeight() - circleRadio, circleRadio, mCirclePaint);// 下面小圆
-        canvas.drawLine(0, 0, 0, getHeight(), mCirclePaint);//垂直的线
-
         canvas.drawLine(0, circleRadio * 2, getWidth(), circleRadio * 2, mPaintLine);//最上面的那根线
         canvas.drawLine(0, getHeight() - circleRadio * 2, getWidth(), getHeight() - circleRadio * 2, mPaintLine);//最下面的那根线
-        canvas.drawLine(0, (getHeight() - circleRadio * 4) / 4 + circleRadio * 2, getWidth(), (getHeight() - circleRadio * 4) / 4 + circleRadio * 2, mPaintLine);//第二根线
-        canvas.drawLine(0, (getHeight() - circleRadio * 4) / 4 * 3 + circleRadio * 2, getWidth(), (getHeight() - circleRadio * 4) / 4 * 3 + circleRadio * 2, mPaintLine);//第3根线
+        canvas.drawLine(0, (getHeight() - circleRadio * 4) / 4 + circleRadio * 2, getWidth(), (getHeight() - circleRadio * 4) / 4 + circleRadio * 2, mPaintSubLine);//第二根线
+        canvas.drawLine(0, (getHeight() - circleRadio * 4) / 4 * 3 + circleRadio * 2, getWidth(), (getHeight() - circleRadio * 4) / 4 * 3 + circleRadio * 2, mPaintSubLine);//第3根线
         canvas.drawLine(0, getHeight() * 0.5f, getWidth(), getHeight() * 0.5f, mCenterLine);//中心线
 
+       if(mQueue.size()<=0){
+           canvas.drawCircle(0, circleRadio, circleRadio, mCirclePaint);// 上面小圆
+           canvas.drawCircle(0, getHeight() - circleRadio, circleRadio, mCirclePaint);// 下面小圆
+           canvas.drawLine(0, 0, 0, getHeight(), mCirclePaint);//垂直的线
+        }
+
         int index = 0;
-        for (int i : mDataArr) {
-            canvas.drawLine(index * mDataDrawWidth, circleRadio * 2, index * mDataDrawWidth, getHeight() - circleRadio * 2, mDataPaint);
+        for (int i : mQueue.getQueue()) {
+            int startX = index*mDataDrawWidth;
+            int startY = (int) ((1-i/100.0)*192);
+            int endX = index*mDataDrawWidth;
+            int endY = (int) ((1+i/100.0)*192);
+            Log.d(TAG, "draw data data="+i+" startX="+startX+" startY="+startY+" endX="+endX+" endY="+endY);
+            if(index==mQueue.size()-1) {
+                canvas.drawLine(startX, startY, endX, endY, mDataPaint);
+                canvas.drawCircle(startX, circleRadio, circleRadio, mCirclePaint);// 上面小圆
+                canvas.drawCircle(startX, getHeight() - circleRadio, circleRadio, mCirclePaint);// 下面小圆
+                canvas.drawLine(startX, 0, startX, getHeight(), mCirclePaint);//垂直的线
+            }
             index++;
         }
+
+//        Log.d(TAG, "数据：" + Arrays.toString(blockingQueue.toArray()));
 
         mHolder.unlockCanvasAndPost(canvas);// 解锁画布，提交画好的图像
     }

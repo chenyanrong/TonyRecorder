@@ -26,7 +26,7 @@ public class LimitQueue<E> {
      * 入列：当队列大小已满时，把队头的元素poll掉
      */
     public void offer(E e) {
-        if (queue.size() >= limit) {
+        if (queue.size() >= limit-1) {
             queue.poll();
         }
         queue.offer(e);

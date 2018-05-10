@@ -39,7 +39,10 @@ public class RecorderService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand ------");
-        String action = intent.getAction();
+        String action = "";
+        if(intent!=null) {
+            action = intent.getAction();
+        }
         if (!TextUtils.isEmpty(action)) {
             if (action.equals(ACTION_STARTBYARGUMENT)) {
                 int audioSource = intent.getIntExtra(AUDIOSOURC, -1);
